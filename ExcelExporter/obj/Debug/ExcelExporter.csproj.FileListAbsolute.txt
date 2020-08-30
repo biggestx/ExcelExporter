@@ -1,0 +1,7 @@
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\bin\Debug\ExcelExporter.exe.config
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\bin\Debug\ExcelExporter.exe
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\bin\Debug\ExcelExporter.pdb
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\obj\Debug\ExcelExporter.csprojAssemblyReference.cache
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\obj\Debug\ExcelExporter.csproj.CoreCompileInputs.cache
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\obj\Debug\ExcelExporter.exe
+D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\obj\Debug\ExcelExporter.pdb

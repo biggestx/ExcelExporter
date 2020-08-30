@@ -40,7 +40,7 @@ namespace ExcelExporter
 
         public void Export()
         {
-            string path = @"D:\git repositories\ExcelExporter\ExcelExporter\Test.xlsx";
+            string path = @"D:\git repository\ExcelExporter\ExcelExporter\ExcelExporter\Test.xlsx";
 
             string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
 
