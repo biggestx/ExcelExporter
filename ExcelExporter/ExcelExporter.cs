@@ -1,4 +1,4 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -49,7 +49,7 @@ namespace ExcelExporter
             if (workbook == null)
                 return;
 
-            Worksheet worksheet = null;
+            Excel.Worksheet worksheet = null;
 
             try
             {
@@ -68,7 +68,7 @@ namespace ExcelExporter
                     var field = worksheet.Cells[1, i].Value;
                     var @type = worksheet.Cells[2, i].Value;
 
-                    fields += "public " + @type + " " + field + "; ";
+                    fields += "public " + @type + " " + field + ";\n";
                 }
 
 
@@ -98,9 +98,10 @@ namespace ExcelExporter
                     container
                     );
 
+                file = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(file).GetRoot().NormalizeWhitespace().ToFullString();
                 Console.WriteLine(file);
 
-                System.IO.File.WriteAllText(@"D:\git repositories\ExcelExporter\ExcelExporter\Test.cs", file);
+                System.IO.File.WriteAllText(@"D:\git repository\ExcelExporter\ExcelExporter\Test.cs", file);
 
             }
             catch (Exception ex)
