@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,8 +16,17 @@ namespace ExcelExporter
     class ExcelExporter
     {
 
+        private enum EIDType
+        {
+            None,
+            Int,
+            String,
+        }
+
+        private const string DATA_CLASS_NAME = "{0}Data";
+
         private const string DATA_CLASS = @"
-        class {0}Data
+        class {0}
         {{
             {1}
         }}
@@ -25,17 +35,33 @@ namespace ExcelExporter
 
         private const string CS_FILE = @"
         using System;
-
+        using System.Collections.Generic;
         namespace Table
         {{
             class {0}Table // name
             {{
-                {1} // TableData
-
-                {2} // Container
+                // TableData
+                {1} 
+                
+                // Container
+                {2} 
             }}
         }}
         ";
+
+
+        private const string DESERIALIZE_FUNC = @"
+        private void Deserialize()
+        {{
+            
+
+
+
+        }}
+        ";
+
+
+        
 
 
         public void Export()
@@ -63,6 +89,9 @@ namespace ExcelExporter
 
                 string fields = "";
 
+                
+
+
                 for (int i = 1; i <= colCount; ++i)
                 {
                     var field = worksheet.Cells[1, i].Value;
@@ -71,10 +100,11 @@ namespace ExcelExporter
                     fields += "public " + @type + " " + field + ";\n";
                 }
 
+                string dataClassName = string.Format(DATA_CLASS_NAME, fileName);
 
                 var dataClass = string.Format(
                     DATA_CLASS,
-                    fileName,
+                    dataClassName,
                     fields
                     );
 
@@ -88,8 +118,29 @@ namespace ExcelExporter
                     }
                 }
 
-                var container = "List<int> Container;\n";
 
+                var containerTypeCell = worksheet.Cells[2, 1].Value as string;
+                switch (containerTypeCell.ToLower())
+                {
+                    case "string":
+                        
+                        break;
+
+                    case "int":
+                        break;
+
+                    default:
+                        throw new Exception("not defined container type. " + containerTypeCell);
+                }
+
+                var container = 
+                    string.Format(
+                        "Dictionary<{0},{1}> Container = new Dictionary<{0},{1}>();\n",
+                        containerTypeCell,
+                        dataClassName);
+
+                //dynamic a = new ExpandoObject();
+                //a.Name = "test";
 
                 string file = string.Format(
                     CS_FILE,
