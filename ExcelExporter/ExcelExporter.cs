@@ -49,25 +49,37 @@ namespace ExcelExporter
                 {2} 
             }}
         }}
-        ";
-
-
-        private const string DESERIALIZE_FUNC = @"
+        
         private void Deserialize()
         {{
+            string path = {0};
             
 
+        }}    
 
-
-        }}
         ";
 
+        public class TEMP
+        {
+            public int ID;
+            public int Power;
+            public string Desc;
+        }
 
-        
+
+        public void Test()  
+        {
+            var load = File.ReadAllText(@"D:\git repository\ExcelExporter\ExcelExporter\Test.json");
+            var data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int,TEMP>>(load);
+            Console.WriteLine(data);
+
+        }
 
 
         public void Export()
         {
+            //Test();
+
             string path = @"D:\git repository\ExcelExporter\ExcelExporter\Test.xlsx";
 
             string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
@@ -109,7 +121,7 @@ namespace ExcelExporter
                             fieldTypes.Add(typeof(string));
                             break;
                         case "int":
-                            fieldTypes.Add(typeof(string));
+                            fieldTypes.Add(typeof(int));
                             break;
                     }
                 }           
@@ -136,9 +148,22 @@ namespace ExcelExporter
                         Excel.Range cell = worksheet.Cells[i, j];
                         Console.WriteLine(cell.Value);
 
-                        ((IDictionary<string, Object>)b).Add(fieldNames[j-1].ToString(), cell.Value);
+                        Type valueType = fieldTypes[j - 1];
+
+                        if (valueType == typeof(string))
+                        {
+                            ((IDictionary<string, Object>)b).Add(fieldNames[j - 1].ToString(), cell.Value);
+                        }
+                        else if (valueType == typeof(int))
+                        {
+                            // todo converting
+                            // string / double -> int
+                            ((IDictionary<string, Object>)b).Add(fieldNames[j - 1].ToString(), (int)cell.Value); 
+                        }
+
+
                     }
-                    values.Add(((IDictionary<string, Object>)b).FirstOrDefault(),b);
+                    values.Add(((IDictionary<string, Object>)b).FirstOrDefault().Value,b);
 
                 }
 
