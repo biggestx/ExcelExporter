@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ExcelExporter
@@ -38,7 +39,8 @@ namespace ExcelExporter
         using System.Collections.Generic;
         namespace Table
         {{
-            class {0}Table // name
+            // name
+            class {0}Table 
             {{
                 // TableData
                 {1} 
@@ -89,16 +91,29 @@ namespace ExcelExporter
 
                 string fields = "";
 
-                
+                List<Type> fieldTypes = new List<Type>();
+                List<string> fieldNames = new List<string>();
 
+                
 
                 for (int i = 1; i <= colCount; ++i)
                 {
-                    var field = worksheet.Cells[1, i].Value;
+                    var fieldName = worksheet.Cells[1, i].Value;
                     var @type = worksheet.Cells[2, i].Value;
 
-                    fields += "public " + @type + " " + field + ";\n";
-                }
+                    fields += "public " + @type + " " + fieldName + ";\n";
+                    fieldNames.Add(fieldName);
+                    switch (type)
+                    {
+                        case "string":
+                            fieldTypes.Add(typeof(string));
+                            break;
+                        case "int":
+                            fieldTypes.Add(typeof(string));
+                            break;
+                    }
+                }           
+                
 
                 string dataClassName = string.Format(DATA_CLASS_NAME, fileName);
 
@@ -109,15 +124,26 @@ namespace ExcelExporter
                     );
 
 
-                for (int i = 1; i <= rowCount; ++i)
+                // data class definition 
+                Dictionary<dynamic,dynamic> values = new Dictionary<dynamic,dynamic>();
+
+                for (int i = 3; i <= rowCount; ++i)
                 {
+                    dynamic b = new ExpandoObject();
+
                     for (int j = 1; j <= colCount; ++j)
                     {
                         Excel.Range cell = worksheet.Cells[i, j];
                         Console.WriteLine(cell.Value);
+
+                        ((IDictionary<string, Object>)b).Add(fieldNames[j-1].ToString(), cell.Value);
                     }
+                    values.Add(((IDictionary<string, Object>)b).FirstOrDefault(),b);
+
                 }
 
+                var jsonFile = Newtonsoft.Json.JsonConvert.SerializeObject(values);
+                System.IO.File.WriteAllText(@"D:\git repository\ExcelExporter\ExcelExporter\Test.json", jsonFile);
 
                 var containerTypeCell = worksheet.Cells[2, 1].Value as string;
                 switch (containerTypeCell.ToLower())
@@ -139,9 +165,6 @@ namespace ExcelExporter
                         containerTypeCell,
                         dataClassName);
 
-                //dynamic a = new ExpandoObject();
-                //a.Name = "test";
-
                 string file = string.Format(
                     CS_FILE,
                     fileName,
@@ -151,6 +174,15 @@ namespace ExcelExporter
 
                 file = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(file).GetRoot().NormalizeWhitespace().ToFullString();
                 Console.WriteLine(file);
+
+                var t = new { Name = "a" };
+                Console.WriteLine(t.GetType());
+
+                Type d = typeof(Dictionary<,>);
+                Type constructed = d.MakeGenericType(typeof(int),t.GetType());
+
+                var inst = Activator.CreateInstance(constructed);
+
 
                 System.IO.File.WriteAllText(@"D:\git repository\ExcelExporter\ExcelExporter\Test.cs", file);
 
