@@ -87,6 +87,10 @@ namespace ExcelExporter
             string className = fileName + "Table";
             string dataName = fileName + "Data";
 
+            string jsonPath = path + fileName + ".json";
+            string csPath = path + fileName + ".cs";
+
+
             Excel.Application excel = new Excel.Application();
             var workbook = excel.Workbooks.Open(excelPath);
             if (workbook == null)
@@ -158,22 +162,10 @@ namespace ExcelExporter
                 }
 
                 var jsonFile = Newtonsoft.Json.JsonConvert.SerializeObject(values);
-                string jsonPath = path + "Test.json";
                 System.IO.File.WriteAllText(jsonPath, jsonFile);
 
-                var containerTypeCell = worksheet.Cells[2, 1].Value as string;
-                switch (containerTypeCell.ToLower())
-                {
-                    case "string":
-                        
-                        break;
 
-                    case "int":
-                        break;
-                        
-                    default:
-                        throw new Exception("not defined container type. " + containerTypeCell);
-                }
+                var containerTypeCell = worksheet.Cells[2, 1].Value as string;
 
                 var container = 
                     string.Format(
@@ -194,15 +186,6 @@ namespace ExcelExporter
                 file = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(file).GetRoot().NormalizeWhitespace().ToFullString();
                 Console.WriteLine(file);
 
-                var t = new { Name = "a" };
-                Console.WriteLine(t.GetType());
-
-                Type d = typeof(Dictionary<,>);
-                Type constructed = d.MakeGenericType(typeof(int),t.GetType());
-
-                var inst = Activator.CreateInstance(constructed);
-
-                var csPath = path + "Test.cs";
                 System.IO.File.WriteAllText(csPath, file);
 
             }
