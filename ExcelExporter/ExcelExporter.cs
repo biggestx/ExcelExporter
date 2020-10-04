@@ -24,38 +24,36 @@ namespace ExcelExporter
             String,
         }
 
-        private const string DATA_CLASS_NAME = "{0}Data";
-
-        private const string DATA_CLASS = @"
-        class {0}
-        {{
-            {1}
-        }}
-        ";
-
-
         private const string CS_FILE = @"
         using System;
         using System.Collections.Generic;
         namespace Table
         {{
-            // name
-            class {0}Table 
+            // class
+            class {0} 
             {{
-                // TableData
-                {1} 
-                
-                // Container
-                {2} 
-            }}
-        }}
-        
-        private void Deserialize()
-        {{
-            string path = {0};
-            
+                // data
+                class {1}
+                {{
+                    {2}
+                }}
 
-        }}    
+                // Container
+                {3} 
+
+                private void Deserialize()
+                {{
+                    string path = {4};
+                    var load = File.ReadAllText(path);
+                    Container = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int,{1}>>(load);
+                    Console.WriteLine(data);
+                }}  
+
+            }}
+
+
+
+        }}       
 
         ";
 
@@ -79,13 +77,18 @@ namespace ExcelExporter
         public void Export()
         {
             //Test();
+            
+            string path = @"D:\git repository\ExcelExporter\ExcelExporter\";
 
-            string path = @"D:\git repository\ExcelExporter\ExcelExporter\Test.xlsx";
+            string excelPath = path + "Test.xlsx";
 
-            string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(excelPath);
+
+            string className = fileName + "Table";
+            string dataName = fileName + "Data";
 
             Excel.Application excel = new Excel.Application();
-            var workbook = excel.Workbooks.Open(path);
+            var workbook = excel.Workbooks.Open(excelPath);
             if (workbook == null)
                 return;
 
@@ -93,7 +96,6 @@ namespace ExcelExporter
 
             try
             {
-
                 // one based
                 worksheet = workbook.Sheets[1] as Excel.Worksheet;
                 Excel.Range v = worksheet.Cells[1, 1];
@@ -105,8 +107,6 @@ namespace ExcelExporter
 
                 List<Type> fieldTypes = new List<Type>();
                 List<string> fieldNames = new List<string>();
-
-                
 
                 for (int i = 1; i <= colCount; ++i)
                 {
@@ -126,16 +126,6 @@ namespace ExcelExporter
                     }
                 }           
                 
-
-                string dataClassName = string.Format(DATA_CLASS_NAME, fileName);
-
-                var dataClass = string.Format(
-                    DATA_CLASS,
-                    dataClassName,
-                    fields
-                    );
-
-
                 // data class definition 
                 Dictionary<dynamic,dynamic> values = new Dictionary<dynamic,dynamic>();
 
@@ -168,7 +158,8 @@ namespace ExcelExporter
                 }
 
                 var jsonFile = Newtonsoft.Json.JsonConvert.SerializeObject(values);
-                System.IO.File.WriteAllText(@"D:\git repository\ExcelExporter\ExcelExporter\Test.json", jsonFile);
+                string jsonPath = path + "Test.json";
+                System.IO.File.WriteAllText(jsonPath, jsonFile);
 
                 var containerTypeCell = worksheet.Cells[2, 1].Value as string;
                 switch (containerTypeCell.ToLower())
@@ -179,7 +170,7 @@ namespace ExcelExporter
 
                     case "int":
                         break;
-
+                        
                     default:
                         throw new Exception("not defined container type. " + containerTypeCell);
                 }
@@ -188,13 +179,16 @@ namespace ExcelExporter
                     string.Format(
                         "Dictionary<{0},{1}> Container = new Dictionary<{0},{1}>();\n",
                         containerTypeCell,
-                        dataClassName);
+                        fileName+"Data");
 
+                const string QUOTE = "\"";
                 string file = string.Format(
                     CS_FILE,
-                    fileName,
-                    dataClass,
-                    container
+                    className,
+                    dataName,
+                    fields,
+                    container,
+                    "@" + QUOTE + path + QUOTE
                     );
 
                 file = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(file).GetRoot().NormalizeWhitespace().ToFullString();
@@ -208,8 +202,8 @@ namespace ExcelExporter
 
                 var inst = Activator.CreateInstance(constructed);
 
-
-                System.IO.File.WriteAllText(@"D:\git repository\ExcelExporter\ExcelExporter\Test.cs", file);
+                var csPath = path + "Test.cs";
+                System.IO.File.WriteAllText(csPath, file);
 
             }
             catch (Exception ex)
