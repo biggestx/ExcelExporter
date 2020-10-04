@@ -27,9 +27,13 @@ namespace ExcelExporter
         private const string CS_FILE = @"
         using System;
         using System.Collections.Generic;
+        using ZeroFormatter;
+
         namespace Table
         {{
             // class
+            [ZeroFormattable]
+            [Serializable]
             class {0} 
             {{
                 // data
@@ -43,24 +47,33 @@ namespace ExcelExporter
 
                 private void Deserialize()
                 {{
-                    string path = {4};
-                    var load = File.ReadAllText(path);
-                    Container = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int,{1}>>(load);
-                    Console.WriteLine(data);
+                    //string path = {4};
+                    //var load = File.ReadAllText(path);
+                    //Container = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int,{1}>>(load);
+                    //Console.WriteLine(data);
                 }}  
-
+                private void Print()
+                {{
+                    Console.WriteLine({4});
+                }}
             }}
-
+        
 
 
         }}       
 
         ";
 
+        [ZeroFormatter.ZeroFormattable]
         public class TEMP
         {
+            [ZeroFormatter.Index(0)]
             public int ID;
+
+            [ZeroFormatter.Index(1)]
             public int Power;
+
+            [ZeroFormatter.Index(2)]
             public string Desc;
         }
 
@@ -136,7 +149,7 @@ namespace ExcelExporter
                 for (int i = 3; i <= rowCount; ++i)
                 {
                     dynamic b = new ExpandoObject();
-
+                    System.ComponentModel.TypeDescriptor.AddAttributes(b, new ZeroFormatter.ZeroFormattableAttribute());
                     for (int j = 1; j <= colCount; ++j)
                     {
                         Excel.Range cell = worksheet.Cells[i, j];
@@ -161,8 +174,8 @@ namespace ExcelExporter
 
                 }
 
-                var jsonFile = Newtonsoft.Json.JsonConvert.SerializeObject(values);
-                System.IO.File.WriteAllText(jsonPath, jsonFile);
+                //var jsonFile = ZeroFormatter.ZeroFormatterSerializer.Serialize(values);
+                //System.IO.File.WriteAllBytes(jsonPath, jsonFile);
 
 
                 var containerTypeCell = worksheet.Cells[2, 1].Value as string;
@@ -188,6 +201,26 @@ namespace ExcelExporter
 
                 System.IO.File.WriteAllText(csPath, file);
 
+
+                // compile to export json 
+                System.CodeDom.Compiler.CodeDomProvider codeDom = System.CodeDom.Compiler.CodeDomProvider.CreateProvider("CSharp");
+                System.CodeDom.Compiler.CompilerParameters cparams = new System.CodeDom.Compiler.CompilerParameters();
+                cparams.GenerateInMemory = true;
+                cparams.ReferencedAssemblies.Add(@"D:\git repository\ExcelExporter\packages\ZeroFormatter.1.6.4\lib\net45\ZeroFormatter.dll");
+                cparams.ReferencedAssemblies.Add(@"D:\git repository\ExcelExporter\packages\ZeroFormatter.Interfaces.1.6.4\lib\net45\ZeroFormatter.Interfaces.dll");
+                System.CodeDom.Compiler.CompilerResults results = codeDom.CompileAssemblyFromSource(cparams, file);
+                if (results.Errors.Count > 0)
+                {
+                    foreach (var err in results.Errors)
+                    {
+                        Console.WriteLine(err.ToString());
+                    }
+                    return;
+                }
+                Type myType = results.CompiledAssembly.GetType("Test.MyClass");
+                object myObject = Activator.CreateInstance(myType);
+                MethodInfo mi = myObject.GetType().GetMethod("PrintName");
+                mi.Invoke(myObject, null);
             }
             catch (Exception ex)
             {
