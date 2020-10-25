@@ -49,8 +49,14 @@ namespace ExcelExporter
                 {{
                     string path = {4};
                     var load = System.IO.File.ReadAllBytes(path);
-                    var test = ZeroFormatterSerializer.Deserialize<{1}>(load);
-                    Console.WriteLine(test.ID);
+                    Container = ZeroFormatterSerializer.Deserialize<{3}>(load);
+                
+                    foreach(var t in Container)
+                    {{
+                        Console.WriteLine(t.Value.ID);
+                        Console.WriteLine(t.Value.Power);
+                        Console.WriteLine(t.Value.Desc);
+                    }}
 
                 }}
 
@@ -65,8 +71,7 @@ namespace ExcelExporter
                         {{
                             Console.WriteLine(data.Value.ID);
                         }}
-                        
-                        var bytes = ZeroFormatterSerializer.Serialize(test);
+                        var bytes = ZeroFormatterSerializer.Serialize(container);
                         System.IO.File.WriteAllBytes({4}, bytes);
                         
                     }}
