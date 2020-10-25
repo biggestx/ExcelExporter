@@ -59,7 +59,8 @@ namespace ExcelExporter
                     }}
 
                 }}
-
+#region
+#if true
                 public void MakeSerializedFile(string txt)
                 {{
                     Console.WriteLine(txt);
@@ -82,6 +83,9 @@ namespace ExcelExporter
 
                     Deserialize();
                 }}
+#endif
+#endregion
+
             }}
         
 
@@ -110,7 +114,6 @@ namespace ExcelExporter
             var workbook = excel.Workbooks.Open(excelPath);
             if (workbook == null)
                 return;
-
             Excel.Worksheet worksheet = null;
 
             try
@@ -201,9 +204,10 @@ namespace ExcelExporter
                     );
 
                 file = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(file).GetRoot().NormalizeWhitespace().ToFullString();
-                Console.WriteLine(file);
 
-                System.IO.File.WriteAllText(csPath, file);
+                // temporary.
+                // fix me : lines in #if keyword are not parsed by CSharpSyntaxTree.ParseText
+                file = file.Replace("#if true", "#if EE_GENERATED");
 
                 // compile to export json 
                 System.CodeDom.Compiler.CodeDomProvider codeDom = System.CodeDom.Compiler.CodeDomProvider.CreateProvider("CSharp");
@@ -212,6 +216,7 @@ namespace ExcelExporter
                 cparams.ReferencedAssemblies.Add(@"D:\git repository\ExcelExporter\packages\ZeroFormatter.1.6.4\lib\net45\ZeroFormatter.dll");
                 cparams.ReferencedAssemblies.Add(@"D:\git repository\ExcelExporter\packages\ZeroFormatter.Interfaces.1.6.4\lib\net45\ZeroFormatter.Interfaces.dll");
                 cparams.ReferencedAssemblies.Add(@"D:\git repository\ExcelExporter\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll");
+                cparams.CompilerOptions += "-define:EE_GENERATED";
 
                 System.CodeDom.Compiler.CompilerResults results = codeDom.CompileAssemblyFromSource(cparams, file);
                 if (results.Errors.Count > 0)
@@ -232,6 +237,11 @@ namespace ExcelExporter
                 // 3. ZeroFormatter로 Serialization
                 // 4. Unity 에서 사용할 수 있게 using newtonsoft, deserialization 메서드 제거
                 mi.Invoke(myObject,new object[] { jsonFile, });
+
+
+                //Console.WriteLine(file);
+
+                System.IO.File.WriteAllText(csPath, file);
             }
             catch (Exception ex)
             {
