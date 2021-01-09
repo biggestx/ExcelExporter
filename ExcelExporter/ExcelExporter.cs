@@ -53,7 +53,7 @@ namespace ExcelExporter
                 }}
 
                 // Container
-                {3} Container = new {3}();
+                public {3} Container = new {3}();
 
                 public void Deserialize()
                 {{
@@ -63,28 +63,15 @@ namespace ExcelExporter
                     string path = {4};
                     var load = System.IO.File.ReadAllBytes(path);
                     Container = ZeroFormatterSerializer.Deserialize<{3}>(load);
-                
-                    foreach(var t in Container)
-                    {{
-                        Console.WriteLine(t.Value.ID);
-                        Console.WriteLine(t.Value.Power);
-                        Console.WriteLine(t.Value.Desc);
-                    }}
 
                 }}
 #region
 #if true
                 public void MakeSerializedFile(string txt)
                 {{
-                    Console.WriteLine(txt);
-                    var test = new {1}();
                     try
                     {{
                         var container = Newtonsoft.Json.JsonConvert.DeserializeObject<{3}>(txt);
-                        foreach(var data in container)
-                        {{
-                            Console.WriteLine(data.Value.ID);
-                        }}
                         var bytes = ZeroFormatterSerializer.Serialize(container);
                         System.IO.File.WriteAllBytes({4}, bytes);
                         
@@ -157,9 +144,12 @@ namespace ExcelExporter
                     {
                         case "string":
                             fieldTypes.Add(typeof(string));
-                            break;
+                            break; 
                         case "int":
                             fieldTypes.Add(typeof(int));
+                            break;
+                        case "float":
+                            fieldTypes.Add(typeof(float));
                             break;
                     }
                 }           
@@ -185,9 +175,12 @@ namespace ExcelExporter
                         {
                             // todo converting
                             // string / double -> int
-                            ((IDictionary<string, Object>)b).Add(fieldNames[j - 1].ToString(), (int)cell.Value); 
+                            ((IDictionary<string, Object>)b).Add(fieldNames[j - 1].ToString(), (int)cell.Value);
                         }
-
+                        else if (valueType == typeof(float))
+                        {
+                            ((IDictionary<string, Object>)b).Add(fieldNames[j - 1].ToString(), (float)cell.Value);
+                        }
 
                     }
                     values.Add(((IDictionary<string, Object>)b).FirstOrDefault().Value,b);
