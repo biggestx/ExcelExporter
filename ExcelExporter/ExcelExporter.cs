@@ -95,13 +95,10 @@ namespace ExcelExporter
         ";
 
 
-        public void Export()
+        public void Export(string path)
         {
-            string path = @"D:\git repository\ExcelExporter\ExcelExporter\";
 
-            string excelPath = path + "Test.xlsx";
-
-            string fileName = System.IO.Path.GetFileNameWithoutExtension(excelPath);
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
 
             string className = fileName + "Table";
             string dataName = fileName + "Data";
@@ -111,7 +108,7 @@ namespace ExcelExporter
             
 
             Excel.Application excel = new Excel.Application();
-            var workbook = excel.Workbooks.Open(excelPath);
+            var workbook = excel.Workbooks.Open(path);
             if (workbook == null)
                 return;
             Excel.Worksheet worksheet = null;
@@ -163,8 +160,6 @@ namespace ExcelExporter
                     for (int j = 1; j <= colCount; ++j)
                     {
                         Excel.Range cell = worksheet.Cells[i, j];
-                        Console.WriteLine(cell.Value);
-
                         Type valueType = fieldTypes[j - 1];
 
                         if (valueType == typeof(string))

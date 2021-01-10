@@ -11,7 +11,10 @@ namespace ExcelExporter
         static void Main(string[] args)
         {
             ExcelExporter e = new ExcelExporter();
-            e.Export();
+
+            string path = @"D:\git repository\ExcelExporter\ExcelExporter\Test.xlsx";
+
+            e.Export(path);
         }
     }
 }
