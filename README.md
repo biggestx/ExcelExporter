@@ -1,15 +1,15 @@
 # Excel Exporter
 
-Language
+Languages
 ----
     - C#
 
-Library
+Libraries
 ----
     - ZeroFormatter
 
 
-Details
+Features
 ----
     - Table System
     - Creates cs, json from xlsx file
