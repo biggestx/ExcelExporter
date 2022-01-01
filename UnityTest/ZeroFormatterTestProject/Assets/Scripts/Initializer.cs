@@ -6,7 +6,6 @@ using global::ZeroFormatter.Formatters;
 public class Initializer : MonoBehaviour
 {
 
-    // Start is called before the first frame update
     void Start()
     {
         ZeroFormatter.ZeroFormatterInitializer.Register();
