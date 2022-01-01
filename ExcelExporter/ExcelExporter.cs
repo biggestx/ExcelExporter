@@ -215,6 +215,7 @@ namespace ExcelExporter
 
                 }
 
+                // for zero formatter serialization
                 var jsonFile = Newtonsoft.Json.JsonConvert.SerializeObject(values);
                 System.IO.File.WriteAllText(jsonPath, jsonFile);
 
@@ -277,6 +278,8 @@ namespace ExcelExporter
                 deserializeMethod.Invoke(myObject, new object[] { });
 
                 System.IO.File.WriteAllText(csPath, file);
+                
+                System.IO.File.Delete(jsonPath);
             }
             catch (Exception ex)
             {
