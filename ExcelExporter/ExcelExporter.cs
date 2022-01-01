@@ -24,45 +24,48 @@ namespace ExcelExporter
             String,
         }
 
+        private const string NAMESPACE = "Table";
+
         private const string CS_FILE = @"
         using System;
         using System.Collections.Generic;
         using ZeroFormatter;
         using ZeroFormatter.Formatters;
-        namespace Table
+        namespace {0}
         {{
             /*
-            {0} // main class name
-            {1} // data class name
-            {2} // data fields
-            {3} // container type
-            {4} // text file path
-            {5} // resolver
+            {0} // namespace
+            {1} // main class name
+            {2} // data class name
+            {3} // data fields
+            {4} // container type
+            {5} // text file path
+            {6} // resolver
             */
 
 
             // class
             
-            public class {0} 
+            public class {1} 
             {{
                 // data
                 [ZeroFormattable]
-                public class {1}
+                public class {2}
                 {{
-                    {2}
+                    {3}
                 }}
 
                 // Container
-                public {3} Container = new {3}();
+                public {4} Container = new {4}();
 
                 public void Deserialize()
                 {{
 #if true == false
-                    {5}
+                    {6}
 #endif
-                    string path = {4};
+                    string path = {5};
                     var load = System.IO.File.ReadAllBytes(path);
-                    Container = ZeroFormatterSerializer.Deserialize<{3}>(load);
+                    Container = ZeroFormatterSerializer.Deserialize<{4}>(load);
 
                 }}
 #region
@@ -71,9 +74,9 @@ namespace ExcelExporter
                 {{
                     try
                     {{
-                        var container = Newtonsoft.Json.JsonConvert.DeserializeObject<{3}>(txt);
+                        var container = Newtonsoft.Json.JsonConvert.DeserializeObject<{4}>(txt);
                         var bytes = ZeroFormatterSerializer.Serialize(container);
-                        System.IO.File.WriteAllBytes({4}, bytes);
+                        System.IO.File.WriteAllBytes({5}, bytes);
                         
                     }}
                     catch(Exception e)
@@ -216,6 +219,7 @@ namespace ExcelExporter
                 const string QUOTE = "\"";
                 string file = string.Format(
                     CS_FILE,
+                    NAMESPACE,
                     className,
                     dataName,
                     fields,
@@ -260,8 +264,6 @@ namespace ExcelExporter
                 // 4. Unity 에서 사용할 수 있게 using newtonsoft, deserialization 메서드 제거
                 mi.Invoke(myObject,new object[] { jsonFile, });
                 deserializeMethod.Invoke(myObject, new object[] { });
-
-                //Console.WriteLine(file);
 
                 System.IO.File.WriteAllText(csPath, file);
             }
