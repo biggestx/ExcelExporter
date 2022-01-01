@@ -94,6 +94,23 @@ namespace ExcelExporter
 
         ";
 
+        public void ExportAll(string directory)
+        {
+            var currentDirectory = System.IO.Directory.GetCurrentDirectory();
+
+            var files = System.IO.Directory.GetFiles(directory);
+            foreach (var f in files)
+            {
+                var extension = System.IO.Path.GetExtension(f);
+                if (extension != ".xlsx")
+                    continue;
+
+                var fullPath = $"{currentDirectory}\\{f}";
+
+
+                Export(fullPath);
+            }
+        }
 
         public void Export(string path)
         {
@@ -108,13 +125,15 @@ namespace ExcelExporter
             
 
             Excel.Application excel = new Excel.Application();
-            var workbook = excel.Workbooks.Open(path);
-            if (workbook == null)
-                return;
+            Excel.Workbook workbook = null;
             Excel.Worksheet worksheet = null;
-
+            
             try
             {
+                workbook = excel.Workbooks.Open(path); //needed full path
+                if (workbook == null)
+                    return;
+
                 // one based
                 worksheet = workbook.Sheets[1] as Excel.Worksheet;
                 Excel.Range v = worksheet.Cells[1, 1];
