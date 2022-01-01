@@ -12,9 +12,11 @@ namespace ExcelExporter
         {
             ExcelExporter e = new ExcelExporter();
 
-            string path = @"D:\git repository\ExcelExporter\ExcelExporter\Test.xlsx";
+            //string path = @"D:\git repository\ExcelExporter\ExcelExporter\Test.xlsx";
+            //e.Export(path);
 
-            e.Export(path);
+            string path = "Files";
+            e.ExportAll(path);
         }
     }
 }
