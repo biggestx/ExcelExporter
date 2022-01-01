@@ -119,12 +119,13 @@ namespace ExcelExporter
         {
 
             string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            string pathWithoutExtension = path.Replace(".xlsx", "");
 
             string className = fileName + "Table";
             string dataName = fileName + "Data";
 
-            string jsonPath = path + fileName + ".json";
-            string csPath = path + fileName + ".cs";
+            string jsonPath = pathWithoutExtension + ".json";
+            string csPath = pathWithoutExtension + ".cs";
             
 
             Excel.Application excel = new Excel.Application();
@@ -224,7 +225,7 @@ namespace ExcelExporter
                     dataName,
                     fields,
                     container,
-                    "@" + QUOTE + path +"Test.byte" + QUOTE,
+                    "@" + QUOTE + pathWithoutExtension + ".byte" + QUOTE,
                     $"Formatter.RegisterDictionary<DefaultResolver, int, {dataName}>();"
                     );
 
@@ -252,7 +253,7 @@ namespace ExcelExporter
                     }
                     return;
                 }
-                Type myType = results.CompiledAssembly.GetType("Table.TestTable");
+                Type myType = results.CompiledAssembly.GetType($"{NAMESPACE}.{fileName}Table");
                 object myObject = Activator.CreateInstance(myType);
                 MethodInfo mi = myObject.GetType().GetMethod("MakeSerializedFile");
                 MethodInfo deserializeMethod = myObject.GetType().GetMethod("Deserialize");
