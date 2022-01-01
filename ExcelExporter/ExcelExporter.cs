@@ -68,6 +68,15 @@ namespace ExcelExporter
                     Container = ZeroFormatterSerializer.Deserialize<{4}>(load);
 
                 }}
+
+                public void DeserializeFromBytes(byte[] bytes)
+                {{
+#if true == false
+                    {6}
+#endif
+                    Container = ZeroFormatterSerializer.Deserialize<{4}>(bytes);
+                }}
+
 #region
 #if true
                 public void MakeSerializedFile(string txt)
@@ -110,7 +119,6 @@ namespace ExcelExporter
 
                 var fullPath = $"{currentDirectory}\\{f}";
 
-
                 Export(fullPath);
             }
         }
@@ -137,6 +145,8 @@ namespace ExcelExporter
                 workbook = excel.Workbooks.Open(path); //needed full path
                 if (workbook == null)
                     return;
+
+                Console.WriteLine($"opening {path}");
 
                 // one based
                 worksheet = workbook.Sheets[1] as Excel.Worksheet;
@@ -285,6 +295,8 @@ namespace ExcelExporter
 
                 excel.Quit();
                 Marshal.ReleaseComObject(excel);
+
+                Console.WriteLine($"closing {path}");
             }
 
 
