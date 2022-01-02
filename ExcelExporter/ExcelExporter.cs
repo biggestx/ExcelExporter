@@ -24,8 +24,10 @@ namespace ExcelExporter
             String,
         }
 
-        private const string NAMESPACE = "Table";
+        private const string ZEROFORMATTER_RESOURCE_EXTENSION = ".bytes";
 
+
+        private const string NAMESPACE = "Table";
         private const string CS_FILE = @"
         using System;
         using System.Collections.Generic;
@@ -236,7 +238,7 @@ namespace ExcelExporter
                     dataName,
                     fields,
                     container,
-                    "@" + QUOTE + pathWithoutExtension + ".byte" + QUOTE,
+                    "@" + QUOTE + pathWithoutExtension + ZEROFORMATTER_RESOURCE_EXTENSION + QUOTE,
                     $"Formatter.RegisterDictionary<DefaultResolver, int, {dataName}>();"
                     );
 
