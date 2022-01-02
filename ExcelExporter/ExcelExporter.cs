@@ -25,9 +25,24 @@ namespace ExcelExporter
         }
 
         private const string ZEROFORMATTER_RESOURCE_EXTENSION = ".bytes";
-
-
         private const string NAMESPACE = "Table";
+
+        private const string BASE_CLASS_CS_FILE_NAME = "IDeserialization.cs";
+
+        private const string BASE_CLASS_CS_FILE_ORIGIN =
+        @"
+        namespace {0}
+        {{
+            public interface ITableDeserialization
+            {{
+                void DeserializeFromBytes(byte[] bytes);
+            }}
+        }}
+        ";
+
+        private readonly string BASE_CLASS_CS_FILE
+            = string.Format(BASE_CLASS_CS_FILE_ORIGIN, NAMESPACE);
+
         private const string CS_FILE = @"
         using System;
         using System.Collections.Generic;
@@ -48,7 +63,7 @@ namespace ExcelExporter
 
             // class
             
-            public class {1} 
+            public class {1} : ITableDeserialization
             {{
                 // data
                 [ZeroFormattable]
@@ -108,6 +123,13 @@ namespace ExcelExporter
 
         ";
 
+        public void CreateBaseInterfaceFile(string directory)
+        {
+            var path = directory + "/" + BASE_CLASS_CS_FILE_NAME;
+            Console.WriteLine(path);
+            System.IO.File.WriteAllText(path, BASE_CLASS_CS_FILE);
+        }
+
         public void ExportAll(string directory)
         {
             var currentDirectory = System.IO.Directory.GetCurrentDirectory();
@@ -123,6 +145,8 @@ namespace ExcelExporter
 
                 Export(fullPath);
             }
+
+            CreateBaseInterfaceFile(directory);
         }
 
         public void Export(string path)
@@ -257,7 +281,11 @@ namespace ExcelExporter
                 cparams.ReferencedAssemblies.Add(@"D:\git repository\ExcelExporter\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll");
                 cparams.CompilerOptions += "-define:EE_GENERATED";
 
-                System.CodeDom.Compiler.CompilerResults results = codeDom.CompileAssemblyFromSource(cparams, file);
+                var compileSource = file + BASE_CLASS_CS_FILE;
+
+                System.CodeDom.Compiler.CompilerResults results 
+                    = codeDom.CompileAssemblyFromSource(cparams, compileSource);
+
                 if (results.Errors.Count > 0)
                 {
                     foreach (var err in results.Errors)
