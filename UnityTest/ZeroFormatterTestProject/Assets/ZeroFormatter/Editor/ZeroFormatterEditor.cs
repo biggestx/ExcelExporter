@@ -11,7 +11,7 @@ public class ZeroFormatterGenerator : MonoBehaviour
     private static readonly string PROJ_DIRECTORY = Application.dataPath.Replace("/Assets","") + "";
     private static readonly string PROJ_FILE_NAME = "Assembly-CSharp.csproj";
 
-    private static readonly string OUTPUT_PATH = Application.dataPath + "/ZeroFormatterTest.cs";
+    private static readonly string OUTPUT_PATH = Application.dataPath + "/ZeroFormatterGenerated.cs";
     private const string COMMAND = "-i \"{0}\" -o \"{1}\" ";
 
     [MenuItem("Window/ZeroFormatter/Execute")]

@@ -11,7 +11,7 @@ public class Initializer : MonoBehaviour
 
     IEnumerator Start()
     {
-        ZeroFormatter.ZeroFormatterInitializer.Register();
+        //ZeroFormatter.Zerofor.Register();
 
         yield return TableManager.Instance.RoutineInitialize();
 
