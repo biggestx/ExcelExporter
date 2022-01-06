@@ -27,7 +27,7 @@ namespace ExcelExporter
         private const string ZEROFORMATTER_RESOURCE_EXTENSION = ".bytes";
         private const string NAMESPACE = "Table";
 
-        private const string BASE_CLASS_CS_FILE_NAME = "IDeserialization.cs";
+        private const string BASE_CLASS_CS_FILE_NAME = "ITableDeserialization.cs";
 
         private const string BASE_CLASS_CS_FILE_ORIGIN =
         @"
