@@ -15,7 +15,7 @@ namespace Table
  // data fields
             Dictionary<int,TestData>
  // container type
-            @"D:/git repository/ExcelExporter/UnityTest/ZeroFormatterTestProject/Assets/Scripts/Tables\Test.bytes" // bytes file path
+            @"D:/git repository/ExcelExporter/UnityTest/ZeroFormatterTestProject/Assets/BiggestResources/Tables\Test.bytes" // bytes file path
             Formatter.RegisterDictionary<DefaultResolver, int, TestData>(); // resolver
             */
     // class
@@ -54,7 +54,7 @@ namespace Table
 #if EE_GENERATED == false
                     Formatter.RegisterDictionary<DefaultResolver, int, TestData>();
 #endif
-            string path = @"D:/git repository/ExcelExporter/UnityTest/ZeroFormatterTestProject/Assets/Scripts/Tables\Test.bytes";
+            string path = @"D:/git repository/ExcelExporter/UnityTest/ZeroFormatterTestProject/Assets/BiggestResources/Tables\Test.bytes";
             var load = System.IO.File.ReadAllBytes(path);
             Container = ZeroFormatterSerializer.Deserialize<Dictionary<int, TestData>>(load);
         }
@@ -75,7 +75,7 @@ namespace Table
             {
                 var container = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, TestData>>(txt);
                 var bytes = ZeroFormatterSerializer.Serialize(container);
-                System.IO.File.WriteAllBytes(@"D:/git repository/ExcelExporter/UnityTest/ZeroFormatterTestProject/Assets/Scripts/Tables\Test.bytes", bytes);
+                System.IO.File.WriteAllBytes(@"D:/git repository/ExcelExporter/UnityTest/ZeroFormatterTestProject/Assets/BiggestResources/Tables\Test.bytes", bytes);
             }
             catch (Exception e)
             {

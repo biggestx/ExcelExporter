@@ -6,29 +6,15 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using AsyncOperations = UnityEngine.ResourceManagement.AsyncOperations;
 
+using global::ZeroFormatter.Formatters;
+
+
 using Table;
 
 public class TableManager : MonoBehaviourSingleton<TableManager>
 {
-   
-    //private static TableManager Inst = new TableManager();
-    //public static TableManager Instance => Inst;
-    //private TableManager() { }
-
-
     public CharacterTable Character;
     public TestTable Test;
-
-    private class Pair
-    {
-        public ITableDeserialization Table;
-        public string Address;
-        public Pair(ITableDeserialization table, string address)
-        {
-            Table = table;
-            Address = address;
-        }
-    }
 
     public void Initialize()
     {
@@ -37,13 +23,16 @@ public class TableManager : MonoBehaviourSingleton<TableManager>
 
     public IEnumerator RoutineInitialize()
     {
+        ZeroFormatter.ZeroFormatterInitializer.Register();
+
         int count = 0;
         int targetCount = 2; // todo
 
         System.Action doCount = () => ++count;
 
-        LoadByAddressable(Character, "Character", doCount);
-        LoadByAddressable(Test, "Test", doCount);
+        // TODO : needed simplfy
+        LoadByAddressable<CharacterTable>("Table/Character", (p) => { Character = p; doCount(); });
+        LoadByAddressable<TestTable>("Table/Test", (p) => { Test = p; doCount(); });
 
         var until = new WaitUntil(() => count == targetCount);
         yield return until;
@@ -53,16 +42,16 @@ public class TableManager : MonoBehaviourSingleton<TableManager>
 
 
     private async void LoadByAddressable<T>
-        (T table,string address, System.Action completed) where T : ITableDeserialization, new()
+        (string address, System.Action<T> completed) where T : ITableDeserialization, new()
     {
-        table = new T();
+        var result = new T();
 
         var handle = Addressables.LoadAssetAsync<TextAsset>(address);
         await handle.Task;
 
         if (handle.Status == AsyncOperations.AsyncOperationStatus.Succeeded)
         {
-            table.DeserializeFromBytes(handle.Result.bytes);
+            result.DeserializeFromBytes(handle.Result.bytes);
             Debug.Log("succeded" + address);
         }
         else
@@ -70,7 +59,7 @@ public class TableManager : MonoBehaviourSingleton<TableManager>
             Debug.Log("failed" + address);
         }
 
-        completed?.Invoke();
+        completed?.Invoke(result);
     }
 
 

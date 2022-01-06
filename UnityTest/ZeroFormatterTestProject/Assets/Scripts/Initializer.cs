@@ -17,6 +17,13 @@ public class Initializer : MonoBehaviour
 
 
         Debug.Log("[Initializer] : Initialized");
+
+        var table = TableManager.Instance.Character.Container;
+        foreach (var d in table)
+        {
+            Debug.LogError($"{d.Key}, {d.Value.Description}");
+        }
+
     }
 
 
