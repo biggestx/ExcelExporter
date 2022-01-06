@@ -157,8 +157,8 @@ namespace ExcelExporter
             string dataName = fileName + "Data";
 
             string jsonPath = outputDirectory + "\\" + fileName + ".json";
-            string csPath = outputDirectory + "\\" + fileName + ".cs";
-            string bytesPath = outputResourceDirectory + "\\" + fileName + ".bytes";
+            string csPath = outputDirectory + "\\" + className + ".cs";
+            string bytesPath = outputResourceDirectory + "\\" + className + ".bytes";
 
             Excel.Application excel = new Excel.Application();
             Excel.Workbook workbook = null;
