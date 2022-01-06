@@ -144,7 +144,7 @@ namespace ExcelExporter
                 Export(inputFullPath, outputDirectory);
             }
 
-            CreateBaseInterfaceFile(inputDirectory);
+            CreateBaseInterfaceFile(outputDirectory);
         }
 
         public void Export(string inputPath, string outputDirectory)
@@ -297,11 +297,7 @@ namespace ExcelExporter
                 MethodInfo mi = myObject.GetType().GetMethod("MakeSerializedFile");
                 MethodInfo deserializeMethod = myObject.GetType().GetMethod("Deserialize");
 
-                // TODO 
-                // 1. json 보내기
-                // 2. 받은 json으로 Deserialization
-                // 3. ZeroFormatter로 Serialization
-                // 4. Unity 에서 사용할 수 있게 using newtonsoft, deserialization 메서드 제거
+                
                 mi.Invoke(myObject,new object[] { jsonFile, });
                 deserializeMethod.Invoke(myObject, new object[] { });
 
