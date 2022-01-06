@@ -56,7 +56,7 @@ namespace ExcelExporter
             {2} // data class name
             {3} // data fields
             {4} // container type
-            {5} // text file path
+            {5} // bytes file path
             {6} // resolver
             */
 
@@ -130,37 +130,35 @@ namespace ExcelExporter
             System.IO.File.WriteAllText(path, BASE_CLASS_CS_FILE);
         }
 
-        public void ExportAll(string directory)
+        public void ExportAll(string inputDirectory, string outputDirectory)
         {
-            var currentDirectory = System.IO.Directory.GetCurrentDirectory();
-
-            var files = System.IO.Directory.GetFiles(directory);
+            var files = System.IO.Directory.GetFiles(inputDirectory);
             foreach (var f in files)
             {
                 var extension = System.IO.Path.GetExtension(f);
                 if (extension != ".xlsx")
                     continue;
 
-                var fullPath = $"{currentDirectory}\\{f}";
+                var inputFullPath = f;
 
-                Export(fullPath);
+                Export(inputFullPath, outputDirectory);
             }
 
-            CreateBaseInterfaceFile(directory);
+            CreateBaseInterfaceFile(inputDirectory);
         }
 
-        public void Export(string path)
+        public void Export(string inputPath, string outputDirectory)
         {
 
-            string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
-            string pathWithoutExtension = path.Replace(".xlsx", "");
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(inputPath);
+            string pathWithoutExtension = inputPath.Replace(".xlsx", "");
 
             string className = fileName + "Table";
             string dataName = fileName + "Data";
 
-            string jsonPath = pathWithoutExtension + ".json";
-            string csPath = pathWithoutExtension + ".cs";
-            
+            string jsonPath = outputDirectory + "\\" + fileName + ".json";
+            string csPath = outputDirectory + "\\" + fileName + ".cs";
+            string bytesPath = outputDirectory + "\\" + fileName + ".bytes";
 
             Excel.Application excel = new Excel.Application();
             Excel.Workbook workbook = null;
@@ -168,11 +166,11 @@ namespace ExcelExporter
             
             try
             {
-                workbook = excel.Workbooks.Open(path); //needed full path
+                workbook = excel.Workbooks.Open(inputPath); //needed full path
                 if (workbook == null)
                     return;
 
-                Console.WriteLine($"opening {path}");
+                Console.WriteLine($"opening {inputPath}");
 
                 // one based
                 worksheet = workbook.Sheets[1] as Excel.Worksheet;
@@ -262,7 +260,7 @@ namespace ExcelExporter
                     dataName,
                     fields,
                     container,
-                    "@" + QUOTE + pathWithoutExtension + ZEROFORMATTER_RESOURCE_EXTENSION + QUOTE,
+                    "@" + QUOTE + bytesPath + QUOTE,
                     $"Formatter.RegisterDictionary<DefaultResolver, int, {dataName}>();"
                     );
 
@@ -329,7 +327,7 @@ namespace ExcelExporter
                 excel.Quit();
                 Marshal.ReleaseComObject(excel);
 
-                Console.WriteLine($"closing {path}");
+                Console.WriteLine($"closing {inputPath}");
             }
 
 
