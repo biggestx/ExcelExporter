@@ -16,33 +16,38 @@ namespace ExcelExporter
             string defaultOutputDirectory = System.IO.Directory.GetCurrentDirectory() + "\\Files_new\\Exported";
 
             string inputDirectory = defaultInputDirectory;
-            string outputDirectory = defaultOutputDirectory;
+            string outputCsDirectory = defaultOutputDirectory;
+            string outputResourceDirectory = defaultOutputDirectory;
 
-            if (args.Length >= 2)
+            if (args.Length >= 3)
             {
                 inputDirectory = args[0];
-                outputDirectory = args[1];
+                outputCsDirectory = args[1];
+                outputResourceDirectory = args[2];
             }
             else
             {
                 inputDirectory = defaultInputDirectory;
-                outputDirectory = defaultOutputDirectory;
+                outputCsDirectory = defaultOutputDirectory;
             }
 
             Console.WriteLine("-----------------------");
             Console.WriteLine("[ExcelExporter] \n");
             Console.WriteLine($"- Input Directory  : {inputDirectory}");
-            Console.WriteLine($"- Output Directory : {outputDirectory}");
+            Console.WriteLine($"- Output CS Directory : {outputCsDirectory}");
+            Console.WriteLine($"- Output Resource Directory : {outputResourceDirectory}");
             Console.WriteLine("-----------------------");
             if (System.IO.Directory.Exists(inputDirectory) == false)
                 System.IO.Directory.CreateDirectory(inputDirectory);
 
-            if (System.IO.Directory.Exists(outputDirectory) == false)
-                System.IO.Directory.CreateDirectory(outputDirectory);
+            if (System.IO.Directory.Exists(outputCsDirectory) == false)
+                System.IO.Directory.CreateDirectory(outputCsDirectory);
 
-            e.ExportAll(inputDirectory,outputDirectory);
+            if (System.IO.Directory.Exists(outputResourceDirectory) == false)
+                System.IO.Directory.CreateDirectory(outputResourceDirectory);
 
-            System.Threading.Thread.Sleep(2000);
+            e.ExportAll(inputDirectory,outputCsDirectory,outputResourceDirectory);
+
         }
     }
 }

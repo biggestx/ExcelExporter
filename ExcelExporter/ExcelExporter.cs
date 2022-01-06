@@ -130,7 +130,7 @@ namespace ExcelExporter
             System.IO.File.WriteAllText(path, BASE_CLASS_CS_FILE);
         }
 
-        public void ExportAll(string inputDirectory, string outputDirectory)
+        public void ExportAll(string inputDirectory, string outputCsDirectory, string outputResourceDirectory)
         {
             var files = System.IO.Directory.GetFiles(inputDirectory);
             foreach (var f in files)
@@ -141,13 +141,13 @@ namespace ExcelExporter
 
                 var inputFullPath = f;
 
-                Export(inputFullPath, outputDirectory);
+                Export(inputFullPath, outputCsDirectory, outputResourceDirectory);
             }
 
-            CreateBaseInterfaceFile(outputDirectory);
+            CreateBaseInterfaceFile(outputCsDirectory);
         }
 
-        public void Export(string inputPath, string outputDirectory)
+        public void Export(string inputPath, string outputDirectory, string outputResourceDirectory)
         {
 
             string fileName = System.IO.Path.GetFileNameWithoutExtension(inputPath);
@@ -158,7 +158,7 @@ namespace ExcelExporter
 
             string jsonPath = outputDirectory + "\\" + fileName + ".json";
             string csPath = outputDirectory + "\\" + fileName + ".cs";
-            string bytesPath = outputDirectory + "\\" + fileName + ".bytes";
+            string bytesPath = outputResourceDirectory + "\\" + fileName + ".bytes";
 
             Excel.Application excel = new Excel.Application();
             Excel.Workbook workbook = null;
@@ -297,7 +297,7 @@ namespace ExcelExporter
                 MethodInfo mi = myObject.GetType().GetMethod("MakeSerializedFile");
                 MethodInfo deserializeMethod = myObject.GetType().GetMethod("Deserialize");
 
-                
+              
                 mi.Invoke(myObject,new object[] { jsonFile, });
                 deserializeMethod.Invoke(myObject, new object[] { });
 

@@ -9,7 +9,8 @@ public class ExcelExporterEditor : EditorWindow
     public string RootPath = null;
     public string ExePath = null;
     public string InputPath = null;
-    public string OutputPath = null;
+    public string OutputCsPath = null;
+    public string OutputResourcePath = null;
 
     public static string GetRootPath()
     {
@@ -29,6 +30,7 @@ public class ExcelExporterEditor : EditorWindow
         return GetRootPath() + "/Editor/Files/Exported";
     }
 
+
     [MenuItem("Window/ExcelExporter/Open")]
     public static void Open()
     {
@@ -46,7 +48,8 @@ public class ExcelExporterEditor : EditorWindow
         window.RootPath = DEFAULT_ROOT_PATH;
         window.ExePath = DEFAULT_EXE_PATH;
         window.InputPath = config != null ? config.InputPath : DEFAULT_INPUT_PATH;
-        window.OutputPath = config != null  ? config.OutputPath : DEFAULT_OUTPUT_PATH;
+        window.OutputCsPath = config != null  ? config.OutputCsPath : DEFAULT_OUTPUT_PATH;
+        window.OutputResourcePath = config != null ? config.OutputResourcePath : DEFAULT_OUTPUT_PATH;
 
         window.Show();
     }
@@ -64,12 +67,22 @@ public class ExcelExporterEditor : EditorWindow
 
         GUILayout.Space(30);
 
-        OutputPath = EditorGUILayout.TextField("OutputPath", OutputPath);
+        OutputCsPath = EditorGUILayout.TextField("OutputPath", OutputCsPath);
         if (GUILayout.Button("Select OutputPath"))
         {
             var path = EditorUtility.OpenFolderPanel("title", Application.dataPath, "");
-            OutputPath = string.IsNullOrEmpty(path) ? OutputPath : path;
+            OutputCsPath = string.IsNullOrEmpty(path) ? OutputCsPath : path;
         }
+
+        GUILayout.Space(30);
+
+        OutputResourcePath = EditorGUILayout.TextField("Output Resource Path", OutputResourcePath);
+        if (GUILayout.Button("Select Output Resource Path"))
+        {
+            var path = EditorUtility.OpenFolderPanel("title", Application.dataPath, "");
+            OutputResourcePath = string.IsNullOrEmpty(path) ? OutputResourcePath : path;
+        }
+
 
         GUILayout.Space(60);
 
@@ -84,14 +97,16 @@ public class ExcelExporterEditor : EditorWindow
             SaveConfig(new Config()
             {
                 InputPath = InputPath,
-                OutputPath = OutputPath,
+                OutputCsPath = OutputCsPath,
+                OutputResourcePath = OutputResourcePath,
             });
         }
 
         if (GUILayout.Button("Set to Default Paths"))
         {
             InputPath = GetDefaultInputPath();
-            OutputPath = GetDefaultOutputPath();
+            OutputCsPath = GetDefaultOutputPath();
+            OutputResourcePath = GetDefaultOutputPath();
         }
 
     }
@@ -99,7 +114,8 @@ public class ExcelExporterEditor : EditorWindow
     public class Config
     {
         public string InputPath;
-        public string OutputPath;
+        public string OutputCsPath;
+        public string OutputResourcePath;
     }
 
     private const string CONFIG_FILE_NAME = "/ExcelExporterConfig.json";
@@ -133,7 +149,7 @@ public class ExcelExporterEditor : EditorWindow
 
     public void Execute()
     {
-        Debug.Log($"Execute \n- ExePath : {ExePath} \n-InputPath : {InputPath} \n-OutputPath : {OutputPath}");
+        Debug.Log($"Execute \n- ExePath : {ExePath} \n-InputPath : {InputPath} \n-OutputCsPath : {OutputCsPath} \n-OutputResourcePath : {OutputResourcePath}");
 
         var queto = "\"";
 
@@ -142,7 +158,7 @@ public class ExcelExporterEditor : EditorWindow
             System.Diagnostics.ProcessStartInfo start = new System.Diagnostics.ProcessStartInfo()
             {
                 FileName = ExePath,
-                Arguments = $"{queto}{InputPath}{queto} {queto}{OutputPath}{queto}",
+                Arguments = $"{queto}{InputPath}{queto} {queto}{OutputCsPath}{queto} {queto}{OutputResourcePath}{queto}",
                 UseShellExecute = false,
                 RedirectStandardOutput = false,
             };
@@ -157,8 +173,11 @@ public class ExcelExporterEditor : EditorWindow
         {
             Debug.LogError("exe file not exist at " + ExePath);
         }
+        AssetDatabase.Refresh();
+        AssetDatabase.ImportAsset(OutputCsPath);
 
-        ZeroFormatterGenerator.Execute(RootPath, OutputPath);
+
+        ZeroFormatterGenerator.Execute(RootPath, OutputCsPath);
 
         AssetDatabase.Refresh();
     }
