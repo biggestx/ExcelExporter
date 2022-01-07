@@ -42,8 +42,8 @@ public class ExcelExporterEditor : EditorWindow
         var config = LoadConfig();
 
         var window = EditorWindow.GetWindow(typeof(ExcelExporterEditor)) as ExcelExporterEditor;
-        window.minSize = new Vector2(800, 300);
-        window.maxSize = new Vector2(1000, 301);
+        window.minSize = new Vector2(800, 450);
+        window.maxSize = new Vector2(1000, 451);
 
         window.RootPath = DEFAULT_ROOT_PATH;
         window.ExePath = DEFAULT_EXE_PATH;
@@ -84,12 +84,8 @@ public class ExcelExporterEditor : EditorWindow
         }
 
 
-        GUILayout.Space(60);
+        GUILayout.Space(50);
 
-        if (GUILayout.Button("Execute"))
-        {
-            Execute();
-        }
 
 
         if (GUILayout.Button("Save Config"))
@@ -107,6 +103,13 @@ public class ExcelExporterEditor : EditorWindow
             InputPath = GetDefaultInputPath();
             OutputCsPath = GetDefaultOutputPath();
             OutputResourcePath = GetDefaultOutputPath();
+        }
+
+        GUILayout.Space(50);
+
+        if (GUILayout.Button("Execute"))
+        {
+            Execute();
         }
 
     }
