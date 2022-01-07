@@ -337,11 +337,3 @@ namespace ExcelExporter
     }
 }
 
-
-namespace Table
-{
-    class Name // {0} file name
-    {
-
-    }
-}
