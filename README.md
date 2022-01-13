@@ -1,5 +1,13 @@
 # Excel Exporter
 
+
+Description
+----
+Game developers use excel to manage lots game datas.
+Generally they use parsing xlsx to json and then into container, ExcelExporter supports this automatically.
+ExcelExporter parses xlsx by using Zeroformatter, it is fater than json.
+    - https://github.com/neuecc/ZeroFormatter
+
 Languages
 ----
     - C#
@@ -8,12 +16,6 @@ Libraries
 ----
     - ZeroFormatter
 
-Description
-----
-    - Game developers use excel to manage lots game datas.
-    - Generally they use parsing xlsx to json and then into container, ExcelExporter supports this automatically
-    - ExcelExporter parses xlsx by using Zeroformatter, it is fater than json.
-        - https://github.com/neuecc/ZeroFormatter
         
 Installation
 ----
