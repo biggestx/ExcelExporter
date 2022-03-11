@@ -5,7 +5,7 @@ Description
 ----
 Game developers use excel to manage lots game datas.
 Generally they use parsing xlsx to json and then into container, ExcelExporter supports this automatically.
-ExcelExporter parses xlsx by using Zeroformatter, it is fater than json.
+ExcelExporter parses xlsx by using Zeroformatter, it is faster than json.
 (https://github.com/neuecc/ZeroFormatter)
 
 Languages
